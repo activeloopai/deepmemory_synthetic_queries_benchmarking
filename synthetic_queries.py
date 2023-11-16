@@ -2,6 +2,24 @@ from completion import OpenAICompletion
 import random
 from synthetic_query_messages import SYSTEM_MESSAGE, USER_MESSAGE
 from tqdm import tqdm
+import functools
+import time
+
+def max_retry(max_attempts):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            attempts = 0
+            while attempts < max_attempts:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    attempts += 1
+                    print(f"Attempt {attempts} failed: {e}")
+                    time.sleep(1)  # optional: add a delay before retrying
+            raise Exception(f"Failed after {max_attempts} attempts")
+        return wrapper
+    return decorator
 
 
 OPENAI_MODELS = ["gpt-3.5-turbo-1106", "gpt-4", "gpt-4-turbo"]
@@ -27,12 +45,16 @@ class SyntheticQueryCreator:
         doc_indices = random.sample(range(len(docs)), number_of_questions)
         for d in doc_indices:
             text, label = docs[d], ids[d]
-            question = self.model.run(text)
+            question = self._create_single_query(self, text)
             questions.append(question)
             relevance.append(label)
             pbar.update(1)
         pbar.close()
         return questions, relevance
+    
+    @max_retry(5)
+    def _create_single_query(self, text):
+        return self.model.run(text)
 
 
 def create_synthetic_queries(
