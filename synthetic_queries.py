@@ -45,7 +45,7 @@ class SyntheticQueryCreator:
         doc_indices = random.sample(range(len(docs)), number_of_questions)
         for d in doc_indices:
             text, label = docs[d], ids[d]
-            question = self._create_single_query(self, text)
+            question = self._create_single_query(text)
             questions.append(question)
             relevance.append(label)
             pbar.update(1)
