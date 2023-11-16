@@ -37,6 +37,7 @@ class SyntheticQueryCreator:
 
 def create_synthetic_queries(
     corpus,
+    client,
     system_message=SYSTEM_MESSAGE,
     human_message=USER_MESSAGE,
     model="gpt-3.5-turbo-1106",
@@ -44,7 +45,7 @@ def create_synthetic_queries(
     save_to_file=True,
     dataset_name="",
 ):
-    creator = SyntheticQueryCreator(system_message, human_message, model)
+    creator = SyntheticQueryCreator(system_message, human_message, model, client=client)
     questions, relevance = creator.run(corpus, number_of_questions)
     if save_to_file:
         if dataset_name:

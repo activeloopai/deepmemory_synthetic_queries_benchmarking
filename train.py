@@ -21,7 +21,7 @@ corpus = VectorStore(
     lock_enabled=False,
 )
 
-# questions, relevance = create_synthetic_queries(corpus, number_of_questions=10, dataset_name="scifact")
+questions, relevance = create_synthetic_queries(corpus, number_of_questions=10, dataset_name="scifact", client=client)
 
 questions, relevance = load_synthetic_queries("scifact_questions_10.txt", "scifact_relevance_10.txt")
 
